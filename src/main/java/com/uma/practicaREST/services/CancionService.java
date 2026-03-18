@@ -32,10 +32,9 @@ public class CancionService {
         if(cancion == null){
             return Optional.empty();
         }
-
+        cancion.setId(idCounter++);
         listaCanciones.add(cancion);
 
-        cancion.setId(idCounter++);
         return Optional.of(cancion);
     }
 

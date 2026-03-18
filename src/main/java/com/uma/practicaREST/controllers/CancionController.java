@@ -18,23 +18,27 @@ public class CancionController {
     @Autowired
     private CancionService cancionService;
 
-    @GetMapping //Se corresponde con GET /canciones
+    private ResponseEntity<Cancion> getOkOrNotFound(Optional<Cancion> cancion) {
+        //Si la cancion no existe devuelve 404, si existe devuelve 200 OK
+        return cancion.isEmpty() ? ResponseEntity.notFound().build() :
+                ResponseEntity.ok(cancion.get());
+    }
+
+    @GetMapping
     public ResponseEntity<List<Cancion>> listaCanciones(){
         List<Cancion> listaCanciones = cancionService.obtenerTodas();
-        //Devolvemos 200 OK
-        return ResponseEntity.ok(listaCanciones);
+        return ResponseEntity.ok(listaCanciones); //Devolvemos 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Cancion> listaPorId(@PathVariable Long id){
         Optional<Cancion> cancion = cancionService.obtenerPorId(id);
 
-        return cancion.isEmpty() ? ResponseEntity.notFound().build() :
-                ResponseEntity.ok(cancion.get());
+        return getOkOrNotFound(cancion);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<Cancion>> listaPorCantante(@RequestParam(name = "cantante", required = false) String cantante){
+    @GetMapping("/") //Para evitar NullPointers establecemos el parametro como "Required"
+    public ResponseEntity<List<Cancion>> listaPorCantante(@RequestParam(name = "cantante", required = true) String cantante){
         return ResponseEntity.ok(cancionService.obtenerPorCantante(cantante));
     }
 
@@ -47,15 +51,14 @@ public class CancionController {
         URI location = uriComponentsBuilder.path("/canciones/{id}")
                 .buildAndExpand(aux.get().getId())
                 .toUri();
-
+        //Devolvemos ademas de la cancion,la URL donde se encuentra
         return ResponseEntity.created(location).body(aux.get());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Cancion> actualizar(@PathVariable Long id, @RequestBody Cancion cancionActualizada) {
         Optional<Cancion> cancion = cancionService.actualizar(id, cancionActualizada);
-        return cancion.isEmpty() ? ResponseEntity.notFound().build() :
-                ResponseEntity.ok(cancionActualizada);
+        return getOkOrNotFound(cancion);
     }
 
     @DeleteMapping("/{id}")

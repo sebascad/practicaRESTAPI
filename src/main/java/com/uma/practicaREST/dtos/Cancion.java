@@ -6,24 +6,12 @@ public class Cancion {
     private String cantante;
     private int anio;
 
-    @Override
-    public String toString() {
-        return "Cancion{" +
-                "id=" + id +
-                ", cantante='" + cantante + '\'' +
-                ", anio=" + anio +
-                ", titulo='" + titulo + '\'' +
-                '}';
-    }
-
     public Cancion(int anio, String cantante, String titulo, Long id) {
         this.anio = anio;
         this.cantante = cantante;
         this.titulo = titulo;
         this.id = id;
     }
-
-    public Cancion(){}
 
     public Long getId() {
         return id;
