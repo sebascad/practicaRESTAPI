@@ -25,9 +25,13 @@ public class CancionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Cancion>> listaCanciones(){
-        List<Cancion> listaCanciones = cancionService.obtenerTodas();
-        return ResponseEntity.ok(listaCanciones); //Devolvemos 200 OK
+    public ResponseEntity<List<Cancion>> listaCanciones(@RequestParam(name = "cantante", required = false) String cantante){
+        //Si el cantante es pasado por parametros buscamos por cantante
+        if (cantante != null){
+            return ResponseEntity.ok(cancionService.obtenerPorCantante(cantante));
+        }
+        //Si no, buscamos todas
+        return ResponseEntity.ok(cancionService.obtenerTodas());
     }
 
     @GetMapping("/{id}")
@@ -37,11 +41,13 @@ public class CancionController {
         return getOkOrNotFound(cancion);
     }
 
-    @GetMapping("/") //Para evitar NullPointers establecemos el parametro como "Required"
+    /* En caso de que se quiera usar otro Endpoint diferente al del Request Mapping, se podria usar este metodo
+
+    @GetMapping() //Para evitar NullPointers establecemos el parametro como "Required"
     public ResponseEntity<List<Cancion>> listaPorCantante(@RequestParam(name = "cantante", required = true) String cantante){
         return ResponseEntity.ok(cancionService.obtenerPorCantante(cantante));
     }
-
+    */
     @PostMapping
     public ResponseEntity<Cancion> crear(@RequestBody Cancion cancion,
                                         UriComponentsBuilder uriComponentsBuilder){
